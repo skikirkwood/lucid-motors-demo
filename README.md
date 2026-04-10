@@ -1,40 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# OnStar – Next.js + Contentful
+
+A Next.js (Pages Router) front-end that renders pages composed in Contentful, modeled after onstar.com.
 
 ## Getting Started
 
-First, run the development server:
+1. **Install dependencies**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+   ```bash
+   npm install
+   ```
+
+2. **Configure environment variables**
+
+   Copy `.env.example` to `.env.local` and fill in your Contentful credentials:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   | Variable | Description |
+   |---|---|
+   | `CONTENTFUL_SPACE_ID` | Your Contentful space ID |
+   | `CONTENTFUL_ACCESS_TOKEN` | Content Delivery API token |
+   | `CONTENTFUL_PREVIEW_TOKEN` | Content Preview API token |
+   | `CONTENTFUL_ENVIRONMENT` | Environment name (default: `master`) |
+
+3. **Create a home page in Contentful**
+
+   Create a **Page** entry with slug `home`. Add section entries (Hero Banner, Card Row, etc.) to the page's `sections` field.
+
+4. **Run the dev server**
+
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000).
+
+## Architecture
+
+```
+src/
+├── components/
+│   ├── sections/          # One component per Contentful section type
+│   │   ├── HeroBanner.tsx
+│   │   ├── PromoBanner.tsx
+│   │   ├── CardRow.tsx
+│   │   ├── PlanComparison.tsx
+│   │   ├── FaqSection.tsx
+│   │   ├── TestimonialSection.tsx
+│   │   ├── RichTextSection.tsx
+│   │   └── VehicleShowcase.tsx
+│   ├── ui/                # Reusable primitives
+│   │   ├── ContentfulImage.tsx
+│   │   └── Cta.tsx
+│   ├── Footer.tsx
+│   ├── Layout.tsx
+│   ├── Navigation.tsx
+│   └── SectionRenderer.tsx
+├── lib/
+│   ├── contentful.ts      # Contentful client & data fetching
+│   ├── helpers.ts         # Type guards & image URL builder
+│   └── types.ts           # TypeScript types for every content type
+├── pages/
+│   ├── _app.tsx
+│   ├── _document.tsx
+│   ├── index.tsx           # Renders the "home" page
+│   └── [slug].tsx          # Renders any other page by slug
+└── styles/
+    └── globals.css
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### How pages work
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Every page in Contentful has a **slug** and an array of **sections**. The `SectionRenderer` maps each section's content type ID to the corresponding React component. Adding a new section type is as simple as creating the component and registering it in `SectionRenderer.tsx`.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Static generation with ISR
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+Pages are statically generated at build time via `getStaticProps` and revalidated every 60 seconds (ISR). The `[slug].tsx` catch-all uses `fallback: "blocking"` so new pages published in Contentful are rendered on first request.

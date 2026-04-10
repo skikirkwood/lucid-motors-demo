@@ -1,5 +1,9 @@
-import type { GetStaticProps, InferGetStaticPropsType } from "next";
-import { getPageBySlug, getNavigationMenu } from "@/lib/contentful";
+import type {
+  GetStaticPaths,
+  GetStaticProps,
+  InferGetStaticPropsType,
+} from "next";
+import { getPageBySlug, getAllPageSlugs, getNavigationMenu } from "@/lib/contentful";
 import Layout from "@/components/Layout";
 import SectionRenderer from "@/components/SectionRenderer";
 import type {
@@ -15,33 +19,50 @@ interface Props {
   navigation: NavigationMenuEntry | null;
 }
 
-export const getStaticProps: GetStaticProps<Props> = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
+  const slugs = await getAllPageSlugs();
+  return {
+    paths: slugs
+      .filter((s) => s !== "home")
+      .map((slug) => ({ params: { slug } })),
+    fallback: "blocking",
+  };
+};
+
+export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
+  params,
+}) => {
+  const slug = params?.slug;
+  if (!slug) return { notFound: true };
+
   const [page, navigation] = await Promise.all([
-    getPageBySlug("home"),
+    getPageBySlug(slug),
     getNavigationMenu("Main Navigation"),
   ]);
 
+  if (!page) return { notFound: true };
+
   return {
     props: {
-      page: (page as unknown as PageEntry) ?? null,
+      page: page as unknown as PageEntry,
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
     },
     revalidate: 60,
   };
 };
 
-export default function HomePage({
+export default function DynamicPage({
   page,
   navigation,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   if (!page || !isResolvedEntry(page)) {
     return (
-      <Layout navigation={navigation} title="OnStar">
+      <Layout navigation={navigation} title="Page Not Found">
         <section className="flex min-h-[60vh] items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900">Welcome to OnStar</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Page Not Found</h1>
             <p className="mt-4 text-lg text-gray-600">
-              Content is loading. Create a page with slug &quot;home&quot; in Contentful to get started.
+              This page doesn&apos;t exist yet.
             </p>
           </div>
         </section>

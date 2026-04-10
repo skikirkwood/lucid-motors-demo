@@ -58,6 +58,10 @@ export type NavigationMenuEntry = Entry<
   EntrySkeletonType<NavigationMenuFields, "navigationMenu">
 >;
 
+// ── Personalization (Ninetailed) ──
+
+export type NinetailedExperienceEntry = Entry<EntrySkeletonType<Record<string, unknown>, "nt_experience">>;
+
 // ── Sections ──
 
 export interface HeroBannerFields {
@@ -67,6 +71,7 @@ export interface HeroBannerFields {
   backgroundImage?: ImageWrapperEntry;
   ctas?: CtaEntry[];
   style?: "dark" | "light" | "gradient";
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type HeroBannerEntry = Entry<
   EntrySkeletonType<HeroBannerFields, "heroBanner">
@@ -79,6 +84,7 @@ export interface PromoBannerFields {
   backgroundImage?: ImageWrapperEntry;
   callToAction?: CtaEntry;
   style?: "default" | "highlight" | "dark";
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type PromoBannerEntry = Entry<
   EntrySkeletonType<PromoBannerFields, "promoBanner">
@@ -103,6 +109,7 @@ export interface CardRowFields {
   description?: string;
   cards: FeatureCardEntry[];
   style?: "grid" | "carousel" | "stack";
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type CardRowEntry = Entry<
   EntrySkeletonType<CardRowFields, "cardRow">
@@ -131,6 +138,7 @@ export interface PlanComparisonFields {
   plans: ServicePlanEntry[];
   featuredPlan?: ServicePlanEntry;
   callToAction?: CtaEntry;
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type PlanComparisonEntry = Entry<
   EntrySkeletonType<PlanComparisonFields, "planComparison">
@@ -149,6 +157,7 @@ export interface FaqSectionFields {
   internalTitle: string;
   headline?: string;
   items: FaqItemEntry[];
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type FaqSectionEntry = Entry<
   EntrySkeletonType<FaqSectionFields, "faqSection">
@@ -173,6 +182,7 @@ export interface TestimonialSectionFields {
   description?: string;
   testimonials: TestimonialEntry[];
   style?: "carousel" | "grid";
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type TestimonialSectionEntry = Entry<
   EntrySkeletonType<TestimonialSectionFields, "testimonialSection">
@@ -185,6 +195,7 @@ export interface RichTextSectionFields {
   image?: ImageWrapperEntry;
   callToAction?: CtaEntry;
   style?: "default" | "centered" | "split";
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type RichTextSectionEntry = Entry<
   EntrySkeletonType<RichTextSectionFields, "richTextSection">
@@ -208,6 +219,7 @@ export interface VehicleShowcaseFields {
   headline?: string;
   description?: string;
   vehicles: VehicleEntry[];
+  nt_experiences?: NinetailedExperienceEntry[];
 }
 export type VehicleShowcaseEntry = Entry<
   EntrySkeletonType<VehicleShowcaseFields, "vehicleShowcase">

@@ -1,3 +1,6 @@
+import React from "react";
+import { Experience } from "@ninetailed/experience.js-next";
+import { ExperienceMapper } from "@ninetailed/experience.js-utils-contentful";
 import { getContentTypeId, isResolvedEntry } from "@/lib/helpers";
 import type { SectionEntry } from "@/lib/types";
 
@@ -21,6 +24,22 @@ const componentMap: Record<string, React.ComponentType<{ entry: any }>> = {
   vehicleShowcase: VehicleShowcase,
 };
 
+const ComponentRenderer = (props: any) => {
+  const contentTypeId = props.sys?.contentType?.sys?.id;
+  const Component = componentMap[contentTypeId];
+  if (!Component) return null;
+  return <Component entry={props} />;
+};
+
+function parseExperiences(entry: any) {
+  const experiences = entry?.fields?.nt_experiences;
+  if (!Array.isArray(experiences) || experiences.length === 0) return [];
+
+  return experiences
+    .filter((exp: any) => ExperienceMapper.isExperienceEntry(exp))
+    .map((exp: any) => ExperienceMapper.mapExperience(exp));
+}
+
 interface Props {
   sections: SectionEntry[];
 }
@@ -32,9 +51,7 @@ export default function SectionRenderer({ sections }: Props) {
         if (!isResolvedEntry(section)) return null;
 
         const contentTypeId = getContentTypeId(section);
-        const Component = componentMap[contentTypeId];
-
-        if (!Component) {
+        if (!componentMap[contentTypeId]) {
           if (process.env.NODE_ENV === "development") {
             return (
               <div
@@ -48,7 +65,17 @@ export default function SectionRenderer({ sections }: Props) {
           return null;
         }
 
-        return <Component key={section.sys.id} entry={section} />;
+        const parsedExperiences = parseExperiences(section);
+
+        return (
+          <Experience
+            key={`${contentTypeId}-${section.sys.id}`}
+            {...(section as any)}
+            id={section.sys.id}
+            component={ComponentRenderer}
+            experiences={parsedExperiences}
+          />
+        );
       })}
     </>
   );

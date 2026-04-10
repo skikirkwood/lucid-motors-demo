@@ -5,6 +5,7 @@ import type {
 } from "next";
 import { useContentfulLiveUpdates } from "@contentful/live-preview/react";
 import { getPageBySlug, getAllPageSlugs, getNavigationMenu } from "@/lib/contentful";
+import { getAllExperiences, getAllAudiences } from "@/lib/ninetailed";
 import Layout from "@/components/Layout";
 import SectionRenderer from "@/components/SectionRenderer";
 import type {
@@ -18,6 +19,13 @@ import { isResolvedEntry } from "@/lib/helpers";
 interface Props {
   page: PageEntry | null;
   navigation: NavigationMenuEntry | null;
+  ninetailed?: {
+    preview: {
+      allExperiences: any[];
+      allAudiences: any[];
+      audienceEntryIdMap: Record<string, string>;
+    };
+  };
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -37,9 +45,11 @@ export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
   const slug = params?.slug;
   if (!slug) return { notFound: true };
 
-  const [page, navigation] = await Promise.all([
+  const [page, navigation, allExperiences, audienceData] = await Promise.all([
     getPageBySlug(slug, preview),
     getNavigationMenu("Main Navigation", preview),
+    getAllExperiences(preview),
+    getAllAudiences(preview),
   ]);
 
   if (!page) return { notFound: true };
@@ -48,6 +58,13 @@ export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
     props: {
       page: page as unknown as PageEntry,
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
+      ninetailed: {
+        preview: {
+          allExperiences,
+          allAudiences: audienceData.mappedAudiences,
+          audienceEntryIdMap: audienceData.audienceEntryIdMap,
+        },
+      },
     },
     revalidate: 5,
   };

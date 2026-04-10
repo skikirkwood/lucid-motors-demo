@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { isResolvedEntry } from "@/lib/helpers";
 import type { FaqSectionEntry, FaqItemEntry } from "@/lib/types";
@@ -8,8 +9,11 @@ interface Props {
   entry: FaqSectionEntry;
 }
 
-function FaqItem({ item }: { item: FaqItemEntry }) {
+function FaqItem({ item: initial }: { item: FaqItemEntry }) {
   const [open, setOpen] = useState(false);
+  const item = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: item.sys.id });
+
   if (!isResolvedEntry(item)) return null;
 
   const fields = item.fields as {
@@ -23,7 +27,10 @@ function FaqItem({ item }: { item: FaqItemEntry }) {
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between py-5 text-left"
       >
-        <span className="text-base font-medium text-gray-900">
+        <span
+          className="text-base font-medium text-gray-900"
+          {...inspectorProps({ fieldId: "question" })}
+        >
           {fields.question}
         </span>
         <svg
@@ -43,7 +50,10 @@ function FaqItem({ item }: { item: FaqItemEntry }) {
         </svg>
       </button>
       {open && fields.answer && (
-        <div className="pb-5 text-sm leading-relaxed text-gray-600 prose prose-sm max-w-none">
+        <div
+          className="pb-5 text-sm leading-relaxed text-gray-600 prose prose-sm max-w-none"
+          {...inspectorProps({ fieldId: "answer" })}
+        >
           {documentToReactComponents(fields.answer)}
         </div>
       )}
@@ -51,7 +61,10 @@ function FaqItem({ item }: { item: FaqItemEntry }) {
   );
 }
 
-export default function FaqSection({ entry }: Props) {
+export default function FaqSection({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     items?: FaqItemEntry[];
@@ -64,11 +77,14 @@ export default function FaqSection({ entry }: Props) {
     <section className="py-16 lg:py-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {fields.headline && (
-          <h2 className="mb-8 text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2
+            className="mb-8 text-center text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+            {...inspectorProps({ fieldId: "headline" })}
+          >
             {fields.headline}
           </h2>
         )}
-        <div className="divide-y divide-gray-200 border-t border-gray-200">
+        <div className="divide-y divide-gray-200 border-t border-gray-200" {...inspectorProps({ fieldId: "items" })}>
           {items.map((item) => (
             <FaqItem key={item.sys.id} item={item} />
           ))}

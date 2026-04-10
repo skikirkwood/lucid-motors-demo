@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import Cta from "@/components/ui/Cta";
 import { isResolvedEntry } from "@/lib/helpers";
 import type { PromoBannerEntry, CtaEntry } from "@/lib/types";
@@ -12,7 +13,10 @@ const bgStyles: Record<string, string> = {
   dark: "bg-gray-900",
 };
 
-export default function PromoBanner({ entry }: Props) {
+export default function PromoBanner({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     message?: string;
     headline?: string;
@@ -26,9 +30,13 @@ export default function PromoBanner({ entry }: Props) {
     <section className={`${bgStyles[style] ?? bgStyles.default} py-3`}>
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-4 gap-y-2 px-4 text-center sm:px-6 lg:px-8">
         {fields.headline && (
-          <span className="text-sm font-bold text-white">{fields.headline}</span>
+          <span className="text-sm font-bold text-white" {...inspectorProps({ fieldId: "headline" })}>
+            {fields.headline}
+          </span>
         )}
-        <span className="text-sm text-white/90">{fields.message}</span>
+        <span className="text-sm text-white/90" {...inspectorProps({ fieldId: "message" })}>
+          {fields.message}
+        </span>
         {fields.callToAction && isResolvedEntry(fields.callToAction) && (
           <Cta
             entry={fields.callToAction}

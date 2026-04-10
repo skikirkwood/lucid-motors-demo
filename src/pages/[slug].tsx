@@ -3,6 +3,7 @@ import type {
   GetStaticProps,
   InferGetStaticPropsType,
 } from "next";
+import { useContentfulLiveUpdates } from "@contentful/live-preview/react";
 import { getPageBySlug, getAllPageSlugs, getNavigationMenu } from "@/lib/contentful";
 import Layout from "@/components/Layout";
 import SectionRenderer from "@/components/SectionRenderer";
@@ -31,13 +32,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
   params,
+  preview = false,
 }) => {
   const slug = params?.slug;
   if (!slug) return { notFound: true };
 
   const [page, navigation] = await Promise.all([
-    getPageBySlug(slug),
-    getNavigationMenu("Main Navigation"),
+    getPageBySlug(slug, preview),
+    getNavigationMenu("Main Navigation", preview),
   ]);
 
   if (!page) return { notFound: true };
@@ -47,14 +49,16 @@ export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
       page: page as unknown as PageEntry,
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
     },
-    revalidate: 60,
+    revalidate: 5,
   };
 };
 
 export default function DynamicPage({
-  page,
+  page: initialPage,
   navigation,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const page = useContentfulLiveUpdates(initialPage);
+
   if (!page || !isResolvedEntry(page)) {
     return (
       <Layout navigation={navigation} title="Page Not Found">

@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import Cta from "@/components/ui/Cta";
@@ -13,7 +14,10 @@ interface Props {
   entry: RichTextSectionEntry;
 }
 
-export default function RichTextSection({ entry }: Props) {
+export default function RichTextSection({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     body?: Document;
@@ -39,12 +43,18 @@ export default function RichTextSection({ entry }: Props) {
         >
           <div>
             {fields.headline && (
-              <h2 className="mb-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2
+                className="mb-6 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+                {...inspectorProps({ fieldId: "headline" })}
+              >
                 {fields.headline}
               </h2>
             )}
             {fields.body && (
-              <div className="prose prose-lg max-w-none text-gray-600">
+              <div
+                className="prose prose-lg max-w-none text-gray-600"
+                {...inspectorProps({ fieldId: "body" })}
+              >
                 {documentToReactComponents(fields.body)}
               </div>
             )}
@@ -56,7 +66,7 @@ export default function RichTextSection({ entry }: Props) {
           </div>
 
           {isSplit && fields.image && isResolvedEntry(fields.image) && (
-            <div className="relative aspect-video overflow-hidden rounded-xl">
+            <div className="relative aspect-video overflow-hidden rounded-xl" {...inspectorProps({ fieldId: "image" })}>
               <ContentfulImage
                 entry={fields.image}
                 fill

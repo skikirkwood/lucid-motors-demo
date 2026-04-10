@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import Cta from "@/components/ui/Cta";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import { isResolvedEntry } from "@/lib/helpers";
@@ -13,12 +14,15 @@ interface Props {
 }
 
 function PlanCard({
-  entry,
+  entry: initial,
   featured,
 }: {
   entry: ServicePlanEntry;
   featured: boolean;
 }) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   if (!isResolvedEntry(entry)) return null;
 
   const fields = entry.fields as {
@@ -52,14 +56,18 @@ function PlanCard({
             <ContentfulImage entry={fields.icon} width={48} height={48} />
           </div>
         )}
-        <h3 className="text-xl font-bold text-gray-900">{fields.name}</h3>
+        <h3 className="text-xl font-bold text-gray-900" {...inspectorProps({ fieldId: "name" })}>
+          {fields.name}
+        </h3>
         {fields.description && (
-          <p className="mt-2 text-sm text-gray-600">{fields.description}</p>
+          <p className="mt-2 text-sm text-gray-600" {...inspectorProps({ fieldId: "description" })}>
+            {fields.description}
+          </p>
         )}
       </div>
 
       {fields.monthlyPrice && (
-        <div className="mb-6">
+        <div className="mb-6" {...inspectorProps({ fieldId: "monthlyPrice" })}>
           <span className="text-4xl font-bold text-gray-900">
             {fields.monthlyPrice}
           </span>
@@ -73,7 +81,7 @@ function PlanCard({
       )}
 
       {fields.features && fields.features.length > 0 && (
-        <ul className="mb-8 flex-1 space-y-3">
+        <ul className="mb-8 flex-1 space-y-3" {...inspectorProps({ fieldId: "features" })}>
           {fields.features.map((feature, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
               <svg
@@ -104,7 +112,10 @@ function PlanCard({
   );
 }
 
-export default function PlanComparison({ entry }: Props) {
+export default function PlanComparison({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     description?: string;
@@ -127,12 +138,18 @@ export default function PlanComparison({ entry }: Props) {
         {(fields.headline || fields.description) && (
           <div className="mb-12 text-center">
             {fields.headline && (
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2
+                className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+                {...inspectorProps({ fieldId: "headline" })}
+              >
                 {fields.headline}
               </h2>
             )}
             {fields.description && (
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              <p
+                className="mx-auto mt-4 max-w-2xl text-lg text-gray-600"
+                {...inspectorProps({ fieldId: "description" })}
+              >
                 {fields.description}
               </p>
             )}
@@ -147,6 +164,7 @@ export default function PlanComparison({ entry }: Props) {
                 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                 : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
           }`}
+          {...inspectorProps({ fieldId: "plans" })}
         >
           {plans.map((plan) => (
             <PlanCard

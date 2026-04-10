@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import { isResolvedEntry } from "@/lib/helpers";
 import type {
@@ -10,7 +11,10 @@ interface Props {
   entry: VehicleShowcaseEntry;
 }
 
-function VehicleCard({ entry }: { entry: VehicleEntry }) {
+function VehicleCard({ entry: initial }: { entry: VehicleEntry }) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   if (!isResolvedEntry(entry)) return null;
 
   const fields = entry.fields as {
@@ -25,7 +29,7 @@ function VehicleCard({ entry }: { entry: VehicleEntry }) {
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl bg-white shadow-md transition-shadow hover:shadow-xl">
       {fields.image && isResolvedEntry(fields.image) && (
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+        <div className="relative aspect-[4/3] overflow-hidden bg-gray-100" {...inspectorProps({ fieldId: "image" })}>
           <ContentfulImage
             entry={fields.image}
             fill
@@ -35,10 +39,13 @@ function VehicleCard({ entry }: { entry: VehicleEntry }) {
         </div>
       )}
       <div className="p-5">
-        <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+        <span
+          className="text-xs font-semibold uppercase tracking-wider text-blue-600"
+          {...inspectorProps({ fieldId: "brand" })}
+        >
           {fields.brand}
         </span>
-        <h3 className="mt-1 text-lg font-bold text-gray-900">
+        <h3 className="mt-1 text-lg font-bold text-gray-900" {...inspectorProps({ fieldId: "model" })}>
           {fields.year} {fields.model}
         </h3>
         {fields.availability && (
@@ -61,7 +68,10 @@ function VehicleCard({ entry }: { entry: VehicleEntry }) {
   );
 }
 
-export default function VehicleShowcase({ entry }: Props) {
+export default function VehicleShowcase({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     description?: string;
@@ -77,18 +87,24 @@ export default function VehicleShowcase({ entry }: Props) {
         {(fields.headline || fields.description) && (
           <div className="mb-12 text-center">
             {fields.headline && (
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2
+                className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+                {...inspectorProps({ fieldId: "headline" })}
+              >
                 {fields.headline}
               </h2>
             )}
             {fields.description && (
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              <p
+                className="mx-auto mt-4 max-w-2xl text-lg text-gray-600"
+                {...inspectorProps({ fieldId: "description" })}
+              >
                 {fields.description}
               </p>
             )}
           </div>
         )}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" {...inspectorProps({ fieldId: "vehicles" })}>
           {vehicles.map((v) => (
             <VehicleCard key={v.sys.id} entry={v} />
           ))}

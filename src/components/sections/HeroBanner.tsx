@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import Cta from "@/components/ui/Cta";
 import { isResolvedEntry } from "@/lib/helpers";
@@ -13,7 +14,10 @@ const overlayStyles: Record<string, string> = {
   gradient: "bg-gradient-to-r from-gray-950/80 to-transparent",
 };
 
-export default function HeroBanner({ entry }: Props) {
+export default function HeroBanner({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     subtitle?: string;
@@ -28,7 +32,7 @@ export default function HeroBanner({ entry }: Props) {
   return (
     <section className="relative flex min-h-[520px] items-center overflow-hidden lg:min-h-[620px]">
       {fields.backgroundImage && isResolvedEntry(fields.backgroundImage) && (
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" {...inspectorProps({ fieldId: "backgroundImage" })}>
           <ContentfulImage
             entry={fields.backgroundImage}
             fill
@@ -45,16 +49,22 @@ export default function HeroBanner({ entry }: Props) {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
-          <h1 className={`text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl ${textColor}`}>
+          <h1
+            className={`text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl ${textColor}`}
+            {...inspectorProps({ fieldId: "headline" })}
+          >
             {fields.headline}
           </h1>
           {fields.subtitle && (
-            <p className={`mt-4 text-lg sm:text-xl ${style === "light" ? "text-gray-600" : "text-gray-300"}`}>
+            <p
+              className={`mt-4 text-lg sm:text-xl ${style === "light" ? "text-gray-600" : "text-gray-300"}`}
+              {...inspectorProps({ fieldId: "subtitle" })}
+            >
               {fields.subtitle}
             </p>
           )}
           {fields.ctas && fields.ctas.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap gap-4" {...inspectorProps({ fieldId: "ctas" })}>
               {fields.ctas.map(
                 (cta) =>
                   isResolvedEntry(cta) && (

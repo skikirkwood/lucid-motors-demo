@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import { isResolvedEntry } from "@/lib/helpers";
 import type {
@@ -10,7 +11,10 @@ interface Props {
   entry: TestimonialSectionEntry;
 }
 
-function TestimonialCard({ entry }: { entry: TestimonialEntry }) {
+function TestimonialCard({ entry: initial }: { entry: TestimonialEntry }) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   if (!isResolvedEntry(entry)) return null;
 
   const fields = entry.fields as {
@@ -36,9 +40,13 @@ function TestimonialCard({ entry }: { entry: TestimonialEntry }) {
           </div>
         )}
         <div>
-          <p className="font-semibold text-gray-900">{fields.name}</p>
+          <p className="font-semibold text-gray-900" {...inspectorProps({ fieldId: "name" })}>
+            {fields.name}
+          </p>
           {fields.vehicleInfo && (
-            <p className="text-xs text-gray-500">{fields.vehicleInfo}</p>
+            <p className="text-xs text-gray-500" {...inspectorProps({ fieldId: "vehicleInfo" })}>
+              {fields.vehicleInfo}
+            </p>
           )}
         </div>
       </div>
@@ -48,18 +56,27 @@ function TestimonialCard({ entry }: { entry: TestimonialEntry }) {
         </span>
       )}
       {fields.headline && (
-        <h3 className="mb-2 text-lg font-bold text-gray-900">
+        <h3
+          className="mb-2 text-lg font-bold text-gray-900"
+          {...inspectorProps({ fieldId: "headline" })}
+        >
           {fields.headline}
         </h3>
       )}
-      <blockquote className="flex-1 text-sm leading-relaxed text-gray-600 italic">
+      <blockquote
+        className="flex-1 text-sm leading-relaxed text-gray-600 italic"
+        {...inspectorProps({ fieldId: "quote" })}
+      >
         &ldquo;{fields.quote}&rdquo;
       </blockquote>
     </div>
   );
 }
 
-export default function TestimonialSection({ entry }: Props) {
+export default function TestimonialSection({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     description?: string;
@@ -76,18 +93,24 @@ export default function TestimonialSection({ entry }: Props) {
         {(fields.headline || fields.description) && (
           <div className="mb-12 text-center">
             {fields.headline && (
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2
+                className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+                {...inspectorProps({ fieldId: "headline" })}
+              >
                 {fields.headline}
               </h2>
             )}
             {fields.description && (
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              <p
+                className="mx-auto mt-4 max-w-2xl text-lg text-gray-600"
+                {...inspectorProps({ fieldId: "description" })}
+              >
                 {fields.description}
               </p>
             )}
           </div>
         )}
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3" {...inspectorProps({ fieldId: "testimonials" })}>
           {testimonials.map((t) => (
             <TestimonialCard key={t.sys.id} entry={t} />
           ))}

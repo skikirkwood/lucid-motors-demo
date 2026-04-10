@@ -19,7 +19,7 @@ export async function getPageBySlug(slug: string, preview = false) {
   const entries = await api.getEntries({
     content_type: "page",
     "fields.slug": slug,
-    include: 4,
+    include: 10,
     limit: 1,
   });
   return entries.items[0] ?? null;

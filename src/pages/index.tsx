@@ -1,4 +1,5 @@
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
+import { useContentfulLiveUpdates } from "@contentful/live-preview/react";
 import { getPageBySlug, getNavigationMenu } from "@/lib/contentful";
 import Layout from "@/components/Layout";
 import SectionRenderer from "@/components/SectionRenderer";
@@ -15,10 +16,10 @@ interface Props {
   navigation: NavigationMenuEntry | null;
 }
 
-export const getStaticProps: GetStaticProps<Props> = async () => {
+export const getStaticProps: GetStaticProps<Props> = async ({ preview = false }) => {
   const [page, navigation] = await Promise.all([
-    getPageBySlug("home"),
-    getNavigationMenu("Main Navigation"),
+    getPageBySlug("home", preview),
+    getNavigationMenu("Main Navigation", preview),
   ]);
 
   return {
@@ -26,14 +27,16 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       page: (page as unknown as PageEntry) ?? null,
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
     },
-    revalidate: 60,
+    revalidate: 5,
   };
 };
 
 export default function HomePage({
-  page,
+  page: initialPage,
   navigation,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const page = useContentfulLiveUpdates(initialPage);
+
   if (!page || !isResolvedEntry(page)) {
     return (
       <Layout navigation={navigation} title="OnStar">

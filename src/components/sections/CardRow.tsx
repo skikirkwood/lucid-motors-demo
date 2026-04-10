@@ -1,3 +1,4 @@
+import { useContentfulLiveUpdates, useContentfulInspectorMode } from "@contentful/live-preview/react";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import Cta from "@/components/ui/Cta";
 import { isResolvedEntry } from "@/lib/helpers";
@@ -12,7 +13,10 @@ interface Props {
   entry: CardRowEntry;
 }
 
-function FeatureCard({ entry }: { entry: FeatureCardEntry }) {
+function FeatureCard({ entry: initial }: { entry: FeatureCardEntry }) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   if (!isResolvedEntry(entry)) return null;
 
   const fields = entry.fields as {
@@ -37,7 +41,7 @@ function FeatureCard({ entry }: { entry: FeatureCardEntry }) {
       }`}
     >
       {fields.image && isResolvedEntry(fields.image) && (
-        <div className="relative aspect-video overflow-hidden">
+        <div className="relative aspect-video overflow-hidden" {...inspectorProps({ fieldId: "image" })}>
           <ContentfulImage
             entry={fields.image}
             fill
@@ -52,16 +56,20 @@ function FeatureCard({ entry }: { entry: FeatureCardEntry }) {
             className={`mb-2 text-xs font-semibold uppercase tracking-wider ${
               isDark ? "text-blue-300" : "text-blue-600"
             }`}
+            {...inspectorProps({ fieldId: "eyebrow" })}
           >
             {fields.eyebrow}
           </span>
         )}
-        <h3 className="text-lg font-bold">{fields.headline}</h3>
+        <h3 className="text-lg font-bold" {...inspectorProps({ fieldId: "headline" })}>
+          {fields.headline}
+        </h3>
         {fields.description && (
           <p
             className={`mt-2 flex-1 text-sm leading-relaxed ${
               isDark ? "text-gray-300" : "text-gray-600"
             }`}
+            {...inspectorProps({ fieldId: "description" })}
           >
             {fields.description}
           </p>
@@ -76,7 +84,10 @@ function FeatureCard({ entry }: { entry: FeatureCardEntry }) {
   );
 }
 
-export default function CardRow({ entry }: Props) {
+export default function CardRow({ entry: initial }: Props) {
+  const entry = useContentfulLiveUpdates(initial);
+  const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
+
   const fields = entry.fields as {
     headline?: string;
     description?: string;
@@ -93,12 +104,18 @@ export default function CardRow({ entry }: Props) {
         {(fields.headline || fields.description) && (
           <div className="mb-12 text-center">
             {fields.headline && (
-              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              <h2
+                className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+                {...inspectorProps({ fieldId: "headline" })}
+              >
                 {fields.headline}
               </h2>
             )}
             {fields.description && (
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              <p
+                className="mx-auto mt-4 max-w-2xl text-lg text-gray-600"
+                {...inspectorProps({ fieldId: "description" })}
+              >
                 {fields.description}
               </p>
             )}
@@ -112,6 +129,7 @@ export default function CardRow({ entry }: Props) {
                 ? "grid-cols-1 sm:grid-cols-2"
                 : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
           }`}
+          {...inspectorProps({ fieldId: "cards" })}
         >
           {cards.map((card) => (
             <FeatureCard key={card.sys.id} entry={card} />

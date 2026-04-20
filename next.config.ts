@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  /** Some preview setups mistakenly use `/blog/api/draft`; Next.js only serves `/api/draft`. */
+  async rewrites() {
+    return [{ source: "/blog/api/draft", destination: "/api/draft" }];
+  },
   images: {
     remotePatterns: [
       {

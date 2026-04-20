@@ -40,7 +40,7 @@ function VehicleCard({ entry: initial }: { entry: VehicleEntry }) {
       )}
       <div className="p-5">
         <span
-          className="text-xs font-semibold uppercase tracking-wider text-blue-600"
+          className="text-xs font-semibold uppercase tracking-wider text-zinc-500"
           {...inspectorProps({ fieldId: "brand" })}
         >
           {fields.brand}

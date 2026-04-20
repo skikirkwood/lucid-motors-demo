@@ -203,7 +203,7 @@ export type RichTextSectionEntry = Entry<
 
 export interface VehicleFields {
   internalTitle: string;
-  brand: "Chevrolet" | "Buick" | "GMC" | "Cadillac";
+  brand: string;
   model: string;
   year: number;
   availability?: string;

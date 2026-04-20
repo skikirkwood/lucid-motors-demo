@@ -76,7 +76,7 @@ export default function Navigation({ menu }: Props) {
       <header className="sticky top-0 z-40 bg-white shadow-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center">
-            <Image src="/onstar-logo.svg" alt="OnStar" width={40} height={40} priority />
+            <Image src="/lucid-motors-logo.svg" alt="Lucid Motors" width={112} height={28} priority />
           </Link>
         </div>
       </header>
@@ -91,7 +91,7 @@ export default function Navigation({ menu }: Props) {
     <header className="sticky top-0 z-40 bg-white shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center">
-          <Image src="/onstar-logo.svg" alt="OnStar" width={40} height={40} priority />
+          <Image src="/lucid-motors-logo.svg" alt="Lucid Motors" width={112} height={28} priority />
         </Link>
 
         {/* Desktop */}

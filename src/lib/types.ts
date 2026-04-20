@@ -36,6 +36,26 @@ export type SeoMetadataEntry = Entry<
   EntrySkeletonType<SeoMetadataFields, "seoMetadata">
 >;
 
+// ── Blog ──
+
+export interface AuthorFields {
+  internalTitle: string;
+  name: string;
+  image?: ImageWrapperEntry;
+  body: Document;
+}
+export type AuthorEntry = Entry<EntrySkeletonType<AuthorFields, "author">>;
+
+export interface BlogPostFields {
+  internalTitle: string;
+  title: string;
+  slug: string;
+  featuredImage: ImageWrapperEntry;
+  body: Document;
+  author: AuthorEntry;
+}
+export type BlogPostEntry = Entry<EntrySkeletonType<BlogPostFields, "blogPost">>;
+
 // ── Navigation ──
 
 export interface NavigationItemFields {

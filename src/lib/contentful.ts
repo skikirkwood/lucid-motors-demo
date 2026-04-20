@@ -14,6 +14,9 @@ function getClient(preview = false): ContentfulClientApi<undefined> {
 export const client = getClient(false);
 export const previewClient = getClient(true);
 
+/** Locale for localized fields (must match Contentful locale codes). */
+const contentLocale = process.env.CONTENTFUL_LOCALE ?? "en-US";
+
 export async function getPageBySlug(slug: string, preview = false) {
   const api = preview ? previewClient : client;
   const entries = await api.getEntries({
@@ -21,6 +24,7 @@ export async function getPageBySlug(slug: string, preview = false) {
     "fields.slug": slug,
     include: 10,
     limit: 1,
+    locale: contentLocale,
   });
   return entries.items[0] ?? null;
 }
@@ -29,6 +33,7 @@ export async function getAllPageSlugs() {
   const entries = await client.getEntries({
     content_type: "page",
     select: ["fields.slug"],
+    locale: contentLocale,
     limit: 200,
   });
   return entries.items.map((item) => (item.fields as { slug: string }).slug);
@@ -41,6 +46,41 @@ export async function getNavigationMenu(name: string, preview = false) {
     "fields.name": name,
     include: 3,
     limit: 1,
+    locale: contentLocale,
   });
   return entries.items[0] ?? null;
+}
+
+export async function getAllBlogPosts(preview = false) {
+  const api = preview ? previewClient : client;
+  const entries = await api.getEntries({
+    content_type: "blogPost",
+    include: 2,
+    order: ["-sys.updatedAt"],
+    locale: contentLocale,
+    limit: 100,
+  });
+  return entries.items;
+}
+
+export async function getBlogPostBySlug(slug: string, preview = false) {
+  const api = preview ? previewClient : client;
+  const entries = await api.getEntries({
+    content_type: "blogPost",
+    "fields.slug": slug,
+    include: 2,
+    limit: 1,
+    locale: contentLocale,
+  });
+  return entries.items[0] ?? null;
+}
+
+export async function getAllBlogPostSlugs() {
+  const entries = await client.getEntries({
+    content_type: "blogPost",
+    select: ["fields.slug"],
+    locale: contentLocale,
+    limit: 100,
+  });
+  return entries.items.map((item) => (item.fields as { slug: string }).slug);
 }

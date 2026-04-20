@@ -55,7 +55,7 @@ export async function getAllBlogPosts(preview = false) {
   const api = preview ? previewClient : client;
   const entries = await api.getEntries({
     content_type: "blogPost",
-    include: 2,
+    include: 4,
     order: ["-sys.updatedAt"],
     locale: contentLocale,
     limit: 100,
@@ -68,7 +68,7 @@ export async function getBlogPostBySlug(slug: string, preview = false) {
   const entries = await api.getEntries({
     content_type: "blogPost",
     "fields.slug": slug,
-    include: 2,
+    include: 4,
     limit: 1,
     locale: contentLocale,
   });

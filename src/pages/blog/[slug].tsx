@@ -22,6 +22,7 @@ import type {
   BlogPostEntry,
   BlogPostFields,
   NavigationMenuEntry,
+  SeoMetadataEntry,
 } from "@/lib/types";
 import { isResolvedEntry } from "@/lib/helpers";
 
@@ -96,9 +97,13 @@ export default function BlogPostPage({
   const fields = post.fields as BlogPostFields;
   const inspector = useContentfulInspectorMode({ entryId: post.sys.id });
   const author = fields.author as AuthorEntry | undefined;
+  const seo: SeoMetadataEntry | undefined =
+    fields.seoMetadata && isResolvedEntry(fields.seoMetadata)
+      ? fields.seoMetadata
+      : undefined;
 
   return (
-    <Layout navigation={navigation} title={fields.title}>
+    <Layout navigation={navigation} seo={seo} title={fields.title}>
       <article>
         <header className="border-b border-gray-100 bg-gray-50 py-12 lg:py-16">
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">

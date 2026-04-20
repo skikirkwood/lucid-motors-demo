@@ -53,6 +53,7 @@ export interface BlogPostFields {
   featuredImage: ImageWrapperEntry;
   body: Document;
   author: AuthorEntry;
+  seoMetadata?: SeoMetadataEntry;
 }
 export type BlogPostEntry = Entry<EntrySkeletonType<BlogPostFields, "blogPost">>;
 

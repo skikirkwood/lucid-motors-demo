@@ -2,7 +2,6 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import Link from "next/link";
 import { useContentfulLiveUpdates } from "@contentful/live-preview/react";
 import { getAllBlogPosts, getNavigationMenu } from "@/lib/contentful";
-import { getAllAudiences, getAllExperiences } from "@/lib/ninetailed";
 import Layout from "@/components/Layout";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import type {
@@ -10,7 +9,7 @@ import type {
   BlogPostFields,
   NavigationMenuEntry,
 } from "@/lib/types";
-import { isResolvedEntry } from "@/lib/helpers";
+import { isResolvedEntry, serializeSafe } from "@/lib/helpers";
 import type { Document } from "@contentful/rich-text-types";
 
 function plainTextFromRichText(doc: Document | undefined): string {
@@ -41,6 +40,7 @@ interface Props {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async ({ preview = false }) => {
+  const { getAllExperiences, getAllAudiences } = await import("@/lib/ninetailed");
   const [rawPosts, navigation, allExperiences, audienceData] = await Promise.all([
     getAllBlogPosts(preview),
     getNavigationMenu("Main Navigation", preview),
@@ -50,7 +50,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ preview = false })
 
   return {
     props: {
-      posts: rawPosts as unknown as BlogPostEntry[],
+      posts: serializeSafe(rawPosts as unknown as BlogPostEntry[]),
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
       ninetailed: {
         preview: {

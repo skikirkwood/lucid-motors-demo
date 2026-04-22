@@ -30,3 +30,20 @@ export function imageUrl(asset: Asset, width?: number): string {
   const base = url.startsWith("//") ? `https:${url}` : url;
   return width ? `${base}?w=${width}&fm=webp&q=80` : `${base}?fm=webp&q=80`;
 }
+
+/**
+ * Deep-clones a value while dropping any circular references.
+ * Used to make Contentful entry data safe to pass as Next.js page props.
+ */
+export function serializeSafe<T>(value: T): T {
+  const seen = new WeakSet();
+  return JSON.parse(
+    JSON.stringify(value, (_, v) => {
+      if (typeof v === "object" && v !== null) {
+        if (seen.has(v)) return undefined;
+        seen.add(v);
+      }
+      return v;
+    }),
+  );
+}

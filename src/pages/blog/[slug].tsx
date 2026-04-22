@@ -13,7 +13,6 @@ import {
   getBlogPostBySlug,
   getNavigationMenu,
 } from "@/lib/contentful";
-import { getAllAudiences, getAllExperiences } from "@/lib/ninetailed";
 import Layout from "@/components/Layout";
 import ContentfulImage from "@/components/ui/ContentfulImage";
 import type {
@@ -24,7 +23,7 @@ import type {
   NavigationMenuEntry,
   SeoMetadataEntry,
 } from "@/lib/types";
-import { isResolvedEntry } from "@/lib/helpers";
+import { isResolvedEntry, serializeSafe } from "@/lib/helpers";
 
 interface Props {
   post: BlogPostEntry | null;
@@ -53,6 +52,7 @@ export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
   const slug = params?.slug;
   if (!slug) return { notFound: true };
 
+  const { getAllExperiences, getAllAudiences } = await import("@/lib/ninetailed");
   const [post, navigation, allExperiences, audienceData] = await Promise.all([
     getBlogPostBySlug(slug, preview),
     getNavigationMenu("Main Navigation", preview),
@@ -64,7 +64,7 @@ export const getStaticProps: GetStaticProps<Props, { slug: string }> = async ({
 
   return {
     props: {
-      post: post as unknown as BlogPostEntry,
+      post: serializeSafe(post as unknown as BlogPostEntry),
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
       ninetailed: {
         preview: {

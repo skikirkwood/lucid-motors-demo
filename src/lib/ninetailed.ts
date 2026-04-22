@@ -8,19 +8,35 @@ import {
 
 export { ExperienceMapper } from "@ninetailed/experience.js-utils-contentful";
 
+/** Strip circular references so the data can be serialized as Next.js page props. */
+function serializeSafe<T>(value: T): T {
+  const seen = new WeakSet();
+  return JSON.parse(
+    JSON.stringify(value, (_, v) => {
+      if (typeof v === "object" && v !== null) {
+        if (seen.has(v)) return undefined;
+        seen.add(v);
+      }
+      return v;
+    }),
+  );
+}
+
 export async function getAllExperiences(preview = false) {
   const api = preview ? previewClient : client;
 
   const entries = await api.getEntries({
     content_type: "nt_experience",
-    include: 3,
+    include: 1,
   });
 
   const experiences = entries.items as unknown as ExperienceEntryLike[];
 
-  return (experiences || [])
-    .filter((entry) => ExperienceMapper.isExperienceEntry(entry))
-    .map((entry) => ExperienceMapper.mapExperience(entry));
+  return serializeSafe(
+    (experiences || [])
+      .filter((entry) => ExperienceMapper.isExperienceEntry(entry))
+      .map((entry) => ExperienceMapper.mapExperience(entry)),
+  );
 }
 
 export async function getAllAudiences(preview = false) {

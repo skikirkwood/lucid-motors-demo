@@ -1,7 +1,6 @@
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useContentfulLiveUpdates } from "@contentful/live-preview/react";
 import { getPageBySlug, getNavigationMenu } from "@/lib/contentful";
-import { getAllExperiences, getAllAudiences } from "@/lib/ninetailed";
 import Layout from "@/components/Layout";
 import SectionRenderer from "@/components/SectionRenderer";
 import type {
@@ -10,7 +9,7 @@ import type {
   SectionEntry,
   SeoMetadataEntry,
 } from "@/lib/types";
-import { isResolvedEntry } from "@/lib/helpers";
+import { isResolvedEntry, serializeSafe } from "@/lib/helpers";
 
 interface Props {
   page: PageEntry | null;
@@ -25,6 +24,7 @@ interface Props {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async ({ preview = false }) => {
+  const { getAllExperiences, getAllAudiences } = await import("@/lib/ninetailed");
   const [page, navigation, allExperiences, audienceData] = await Promise.all([
     getPageBySlug("home", preview),
     getNavigationMenu("Main Navigation", preview),
@@ -34,7 +34,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({ preview = false })
 
   return {
     props: {
-      page: (page as unknown as PageEntry) ?? null,
+      page: serializeSafe((page as unknown as PageEntry) ?? null),
       navigation: (navigation as unknown as NavigationMenuEntry) ?? null,
       ninetailed: {
         preview: {

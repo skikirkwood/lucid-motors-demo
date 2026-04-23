@@ -27,7 +27,23 @@ export default function RichTextSection({ entry: initial }: Props) {
   };
 
   const style = fields.style ?? "default";
-  const isSplit = style === "split";
+  const isSplitLeft = style === "split-image-left";
+  const isSplitRight = style === "split-image-right";
+  const isSplit = isSplitLeft || isSplitRight;
+
+  const imageBlock = fields.image && isResolvedEntry(fields.image) ? (
+    <div
+      className="relative aspect-video overflow-hidden rounded-xl"
+      {...inspectorProps({ fieldId: "image" })}
+    >
+      <ContentfulImage
+        entry={fields.image}
+        fill
+        className="object-cover"
+        sizes="(min-width: 1024px) 50vw, 100vw"
+      />
+    </div>
+  ) : null;
 
   return (
     <section className="py-16 lg:py-24">
@@ -41,6 +57,8 @@ export default function RichTextSection({ entry: initial }: Props) {
                 : "mx-auto max-w-3xl"
           }
         >
+          {isSplitLeft && imageBlock}
+
           <div>
             {fields.headline && (
               <h2
@@ -65,16 +83,7 @@ export default function RichTextSection({ entry: initial }: Props) {
             )}
           </div>
 
-          {isSplit && fields.image && isResolvedEntry(fields.image) && (
-            <div className="relative aspect-video overflow-hidden rounded-xl" {...inspectorProps({ fieldId: "image" })}>
-              <ContentfulImage
-                entry={fields.image}
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 50vw, 100vw"
-              />
-            </div>
-          )}
+          {isSplitRight && imageBlock}
         </div>
       </div>
     </section>

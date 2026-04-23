@@ -35,7 +35,7 @@ function parseExperiences(post: BlogPostEntry) {
     .map((exp: any) => ExperienceMapper.mapExperience(exp));
 }
 
-function BlogPostContent({ entry }: { entry: BlogPostEntry }) {
+function BlogPostContent(entry: BlogPostEntry) {
   const fields = entry.fields as BlogPostFields;
   const inspector = useContentfulInspectorMode({ entryId: entry.sys.id });
   const author = fields.author as AuthorEntry | undefined;

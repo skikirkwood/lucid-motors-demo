@@ -43,7 +43,7 @@ function parseExperiences(post: BlogPostEntry) {
     .map((exp: any) => ExperienceMapper.mapExperience(exp));
 }
 
-function BlogPostCard({ entry }: { entry: BlogPostEntry }) {
+function BlogPostCard(entry: BlogPostEntry) {
   const fields = entry.fields as BlogPostFields & { includeInBlogSplashPage?: boolean };
   const slug = fields.slug ?? "";
   const author =

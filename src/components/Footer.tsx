@@ -1,6 +1,50 @@
 import Link from "next/link";
 import Image from "next/image";
 
+const LINKS = {
+  vehicles: [
+    { label: "Lucid Air", href: "https://www.lucidmotors.com/lucid-air" },
+    { label: "Lucid Gravity", href: "https://www.lucidmotors.com/lucid-gravity" },
+    { label: "Compare models", href: "https://www.lucidmotors.com/compare-models" },
+  ],
+  experience: [
+    { label: "DreamDrive", href: "https://www.lucidmotors.com/technology/dreamdrive" },
+    { label: "Charging & range", href: "/charging" },
+    { label: "Lucid app", href: "https://www.lucidmotors.com/lucid-app" },
+  ],
+  ownership: [
+    { label: "Service & support", href: "https://www.lucidmotors.com/ownership" },
+    { label: "Help center", href: "https://www.lucidmotors.com/support" },
+    { label: "Contact us", href: "https://www.lucidmotors.com/contact" },
+  ],
+  company: [
+    { label: "About Lucid Motors", href: "https://www.lucidmotors.com/about-us" },
+    { label: "Privacy", href: "https://www.lucidmotors.com/legal/privacy-policy" },
+    { label: "Terms", href: "https://www.lucidmotors.com/legal/terms-of-use" },
+  ],
+};
+
+function FooterLink({ href, label }: { href: string; label: string }) {
+  const isExternal = href.startsWith("http");
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-white transition-colors"
+      >
+        {label}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className="hover:text-white transition-colors">
+      {label}
+    </Link>
+  );
+}
+
 export default function Footer() {
   return (
     <footer className="bg-gray-950 text-gray-400">
@@ -22,21 +66,9 @@ export default function Footer() {
               Vehicles
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/lucid-air" className="hover:text-white transition-colors">
-                  Lucid Air
-                </Link>
-              </li>
-              <li>
-                <Link href="/lucid-gravity" className="hover:text-white transition-colors">
-                  Lucid Gravity
-                </Link>
-              </li>
-              <li>
-                <Link href="/compare" className="hover:text-white transition-colors">
-                  Compare models
-                </Link>
-              </li>
+              {LINKS.vehicles.map((l) => (
+                <li key={l.href}><FooterLink {...l} /></li>
+              ))}
             </ul>
           </div>
           <div>
@@ -44,21 +76,9 @@ export default function Footer() {
               Experience
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/dreamdrive" className="hover:text-white transition-colors">
-                  DreamDrive
-                </Link>
-              </li>
-              <li>
-                <Link href="/charging" className="hover:text-white transition-colors">
-                  Charging &amp; range
-                </Link>
-              </li>
-              <li>
-                <Link href="/app" className="hover:text-white transition-colors">
-                  Lucid app
-                </Link>
-              </li>
+              {LINKS.experience.map((l) => (
+                <li key={l.href}><FooterLink {...l} /></li>
+              ))}
             </ul>
           </div>
           <div>
@@ -66,21 +86,9 @@ export default function Footer() {
               Ownership
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/service" className="hover:text-white transition-colors">
-                  Service &amp; support
-                </Link>
-              </li>
-              <li>
-                <Link href="/support" className="hover:text-white transition-colors">
-                  Help center
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact us
-                </Link>
-              </li>
+              {LINKS.ownership.map((l) => (
+                <li key={l.href}><FooterLink {...l} /></li>
+              ))}
             </ul>
           </div>
           <div>
@@ -88,21 +96,9 @@ export default function Footer() {
               Company
             </h3>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/about" className="hover:text-white transition-colors">
-                  About Lucid Motors
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
-                  Privacy
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  Terms
-                </Link>
-              </li>
+              {LINKS.company.map((l) => (
+                <li key={l.href}><FooterLink {...l} /></li>
+              ))}
             </ul>
           </div>
         </div>

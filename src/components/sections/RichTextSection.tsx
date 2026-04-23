@@ -64,7 +64,8 @@ export default function RichTextSection({ entry: initial }: Props) {
           <div>
             {fields.eyebrow && (
               <p
-                className="mb-3 text-sm font-semibold uppercase tracking-widest text-orange-500"
+                className="mb-3 text-sm font-semibold uppercase tracking-widest"
+                style={{ color: "rgb(215, 190, 150)" }}
                 {...inspectorProps({ fieldId: "eyebrow" })}
               >
                 {fields.eyebrow}

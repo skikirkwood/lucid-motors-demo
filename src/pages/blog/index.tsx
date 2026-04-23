@@ -89,7 +89,10 @@ export default function BlogIndex({
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {(posts ?? []).filter(isResolvedEntry).map((post) => {
+          {(posts ?? []).filter(isResolvedEntry).filter((post) => {
+            const f = post.fields as BlogPostFields & { includeInBlogSplashPage?: boolean };
+            return f.includeInBlogSplashPage !== false;
+          }).map((post) => {
             const fields = post.fields as BlogPostFields;
             const slug = fields.slug ?? "";
             const author =

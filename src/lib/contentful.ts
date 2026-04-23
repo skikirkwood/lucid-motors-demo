@@ -50,15 +50,19 @@ export async function getNavigationMenu(name: string, preview = false, locale = 
   return entries.items[0] ?? null;
 }
 
-export async function getAllBlogPosts(preview = false, locale = DEFAULT_LOCALE) {
+export async function getAllBlogPosts(preview = false, locale = DEFAULT_LOCALE, splashOnly = true) {
   const api = preview ? previewClient : client;
-  const entries = await api.getEntries({
+  const query: Record<string, unknown> = {
     content_type: "blogPost",
     include: 4,
     order: ["-sys.updatedAt"],
     locale,
     limit: 100,
-  });
+  };
+  if (splashOnly) {
+    query["fields.includeInBlogSplashPage[ne]"] = false;
+  }
+  const entries = await api.getEntries(query);
   return entries.items;
 }
 

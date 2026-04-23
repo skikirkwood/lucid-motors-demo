@@ -9,9 +9,9 @@ interface Props {
 
 const styleMap: Record<string, string> = {
   primary:
-    "inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors",
+    "inline-flex items-center justify-center rounded-md bg-white px-6 py-3 text-sm font-semibold text-black shadow-sm hover:bg-gray-100 transition-colors",
   secondary:
-    "inline-flex items-center justify-center rounded-full border-2 border-blue-500 bg-transparent px-6 py-3 text-sm font-semibold text-blue-400 hover:bg-blue-500/10 transition-colors",
+    "inline-flex items-center justify-center rounded-md border border-white bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors",
   link: "inline-flex items-center text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors group",
 };
 

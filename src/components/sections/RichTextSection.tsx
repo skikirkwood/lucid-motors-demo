@@ -19,6 +19,7 @@ export default function RichTextSection({ entry: initial }: Props) {
   const inspectorProps = useContentfulInspectorMode({ entryId: entry.sys.id });
 
   const fields = entry.fields as {
+    eyebrow?: string;
     headline?: string;
     body?: Document;
     image?: ImageWrapperEntry;
@@ -61,6 +62,14 @@ export default function RichTextSection({ entry: initial }: Props) {
           )}
 
           <div>
+            {fields.eyebrow && (
+              <p
+                className="mb-3 text-sm font-semibold uppercase tracking-widest text-orange-500"
+                {...inspectorProps({ fieldId: "eyebrow" })}
+              >
+                {fields.eyebrow}
+              </p>
+            )}
             {fields.headline && (
               <h2
                 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-4xl"
